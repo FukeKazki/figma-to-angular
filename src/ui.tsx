@@ -50,13 +50,13 @@ const App: React.VFC = () => {
     <div>
       <div className={styles.code}>
         {/* tsを表示 */}
-        <p>{componentName}.component.ts</p>
+        <p className={styles.fileName}>{componentName}.component.ts</p>
         <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedScriipt }} />
         {/* HTMLを表示 */}
-        <p>{componentName}.component.html</p>
+        <p className={styles.fileName}>{componentName}.component.html</p>
         <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedHtml }} />
         {/* CSSを表示 */}
-        <p>{componentName}.component.css</p>
+        <p className={styles.fileName}>{componentName}.component.css</p>
         <p
           className={styles.generatedCode}
           dangerouslySetInnerHTML={{
