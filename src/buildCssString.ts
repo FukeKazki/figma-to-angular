@@ -27,12 +27,7 @@ export function buildCssString(tag: Tag, cssStyle: CssStyle): string {
     if (!cssData || cssData.properties.length === 0) {
       return
     }
-    const cssStr =
-      cssStyle === 'styled-components'
-        ? `const ${cssData?.className.replace(/\s/g, '')} = styled.div\`
-${cssData.properties.map((property) => `  ${property.name}: ${property.value};`).join('\n')}
-\`\n`
-        : `.${buildClassName(cssData?.className)} {
+    const cssStr = `.${buildClassName(cssData?.className)} {
 ${cssData.properties.map((property) => `  ${property.name}: ${property.value};`).join('\n')}
 }\n`
 

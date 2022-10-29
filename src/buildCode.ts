@@ -1,4 +1,3 @@
-import { capitalizeFirstLetter } from './utils/stringUtils'
 import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
 
@@ -31,8 +30,8 @@ function guessTagName(name: string) {
   return 'div'
 }
 
-function getTagName(tag: Tag, cssStyle: CssStyle) {
-  if (cssStyle === 'css' && !tag.isComponent) {
+function getTagName(tag: Tag) {
+  if (!tag.isComponent) {
     if (tag.isImg) {
       return 'img'
     }
@@ -44,8 +43,8 @@ function getTagName(tag: Tag, cssStyle: CssStyle) {
   return tag.isText ? 'Text' : tag.name.replace(/\s/g, '')
 }
 
-function getClassName(tag: Tag, cssStyle: CssStyle) {
-  if (cssStyle === 'css' && !tag.isComponent) {
+function getClassName(tag: Tag) {
+  if (!tag.isComponent) {
     if (tag.isImg) {
       return ''
     }
@@ -60,7 +59,7 @@ function buildPropertyString(prop: Tag['properties'][number]) {
 
 function buildChildTagsString(tag: Tag, cssStyle: CssStyle, level: number): string {
   if (tag.children.length > 0) {
-    return '\n' + tag.children.map((child) => buildJsxString(child, cssStyle, level + 1)).join('\n')
+    return '\n' + tag.children.map((child) => buildHtmlString(child, level + 1)).join('\n')
   }
   if (tag.isText) {
     return `${tag.textCharacters}`
@@ -68,28 +67,24 @@ function buildChildTagsString(tag: Tag, cssStyle: CssStyle, level: number): stri
   return ''
 }
 
-function buildJsxString(tag: Tag, cssStyle: CssStyle, level: number) {
-  if (!tag) {
-    return ''
-  }
-  const spaceString = buildSpaces(4, level)
+export function buildCode(tag: Tag): string {
+  return `${buildHtmlString(tag, 0)}`
+}
+
+// htmlの生成
+function buildHtmlString(tag: Tag, level: number) {
+  if (!tag) return ''
+
+  const spaceString = buildSpaces(0, level) // インデントのことかな？
   const hasChildren = tag.children.length > 0
 
-  const tagName = getTagName(tag, cssStyle)
-  const className = getClassName(tag, cssStyle)
+  const tagName = getTagName(tag)
+  const className = getClassName(tag)
   const properties = tag.properties.map(buildPropertyString).join('')
 
   const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
-  const childTags = buildChildTagsString(tag, cssStyle, level)
+  const childTags = buildChildTagsString(tag, 'css', level)
   const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
 
   return openingTag + childTags + closingTag
-}
-
-export function buildCode(tag: Tag, css: CssStyle): string {
-  return `const ${capitalizeFirstLetter(tag.name.replace(/\s/g, ''))}: React.VFC = () => {
-  return (
-${buildJsxString(tag, css, 0)}
-  )
-}`
 }
