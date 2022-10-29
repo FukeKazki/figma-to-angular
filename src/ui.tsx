@@ -1,8 +1,6 @@
 import * as React from 'react'
 import * as ReactDom from 'react-dom'
-import { messageTypes } from './messagesTypes'
 import styles from './ui.css'
-import Spacer from './ui/Spacer'
 
 function escapeHtml(str: string) {
   str = str.replace(/&/g, '&amp;')
@@ -30,27 +28,15 @@ function insertSyntaxHighlightText(text: string) {
 }
 
 const App: React.VFC = () => {
-  const textRef = React.useRef<HTMLTextAreaElement>(null)
   const [html, setHtml] = React.useState('')
   const [css, setCss] = React.useState('')
   const [script, setScript] = React.useState('')
   const [componentName, setComponentName] = React.useState('')
 
-  const copyToClipboard = () => {
-    if (textRef.current) {
-      textRef.current.select()
-      document.execCommand('copy')
-
-      const msg: messageTypes = { type: 'notify-copy-success' }
-      parent.postMessage(msg, '*')
-    }
-  }
-
   const syntaxHighlightedHtml = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(html)), [html])
   const syntaxHighlightedCss = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(css)), [css])
   const syntaxHighlightedScriipt = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(script)), [script])
 
-  // set initial values taken from figma storage
   React.useEffect(() => {
     onmessage = (event) => {
       setHtml(event.data.pluginMessage.generatedCodeStr)
@@ -63,7 +49,6 @@ const App: React.VFC = () => {
   return (
     <div>
       <div className={styles.code}>
-        {/* <textarea className={styles.textareaForClipboard} ref={textRef} value={code} readOnly /> */}
         {/* tsを表示 */}
         <p>{componentName}.component.ts</p>
         <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedScriipt }} />
@@ -78,14 +63,6 @@ const App: React.VFC = () => {
             __html: syntaxHighlightedCss
           }}
         />
-
-        {/* <Spacer axis="vertical" size={12} /> */}
-
-        {/* <div className={styles.buttonLayout}>
-          <button className={styles.copyButton} onClick={copyToClipboard}>
-            Copy to clipboard
-          </button>
-        </div> */}
       </div>
     </div>
   )
