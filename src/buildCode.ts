@@ -1,8 +1,6 @@
 import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
 
-type CssStyle = 'css' | 'styled-components'
-
 function buildSpaces(baseSpaces: number, level: number) {
   let spacesStr = ''
 
@@ -48,7 +46,7 @@ function getClassName(tag: Tag) {
     if (tag.isImg) {
       return ''
     }
-    return ` className="${buildClassName(tag.css.className)}"`
+    return ` class="${buildClassName(tag.css.className)}"`
   }
   return ''
 }
@@ -57,7 +55,7 @@ function buildPropertyString(prop: Tag['properties'][number]) {
   return ` ${prop.name}${prop.value !== null ? `=${prop.notStringValue ? '{' : '"'}${prop.value}${prop.notStringValue ? '}' : '"'}` : ''}`
 }
 
-function buildChildTagsString(tag: Tag, cssStyle: CssStyle, level: number): string {
+function buildChildTagsString(tag: Tag, level: number): string {
   if (tag.children.length > 0) {
     return '\n' + tag.children.map((child) => buildHtmlString(child, level + 1)).join('\n')
   }
@@ -67,7 +65,7 @@ function buildChildTagsString(tag: Tag, cssStyle: CssStyle, level: number): stri
   return ''
 }
 
-export function buildCode(tag: Tag): string {
+export function buildHtml(tag: Tag): string {
   return `${buildHtmlString(tag, 0)}`
 }
 
@@ -83,7 +81,7 @@ function buildHtmlString(tag: Tag, level: number) {
   const properties = tag.properties.map(buildPropertyString).join('')
 
   const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
-  const childTags = buildChildTagsString(tag, 'css', level)
+  const childTags = buildChildTagsString(tag, level)
   const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
 
   return openingTag + childTags + closingTag

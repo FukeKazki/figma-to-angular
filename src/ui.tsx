@@ -17,12 +17,6 @@ function escapeHtml(str: string) {
 // but didn't like the color. so I give it a go for this dirty style💪
 function insertSyntaxHighlightText(text: string) {
   return text
-    .replaceAll('const', `const <span class="${styles.variableName}">`)
-    .replaceAll(': React.VFC', `</span>: React.VFC`)
-    .replaceAll('= styled.', `</span>= styled.`)
-    .replaceAll('React.VFC', `<span class="${styles.typeText}">React.VFC</span>`)
-    .replaceAll('return', `<span class="${styles.returnText}">return</span>`)
-    .replaceAll(': ', `<span class="${styles.expressionText}">: </span>`)
     .replaceAll('= ()', `<span class="${styles.expressionText}">= ()</span>`)
     .replaceAll('{', `<span class="${styles.expressionText}">{</span>`)
     .replaceAll('}', `<span class="${styles.expressionText}">}</span>`)
@@ -39,6 +33,7 @@ const App: React.VFC = () => {
   const textRef = React.useRef<HTMLTextAreaElement>(null)
   const [html, setHtml] = React.useState('')
   const [css, setCss] = React.useState('')
+  const [script, setScript] = React.useState('')
   const [componentName, setComponentName] = React.useState('')
 
   const copyToClipboard = () => {
@@ -53,6 +48,7 @@ const App: React.VFC = () => {
 
   const syntaxHighlightedHtml = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(html)), [html])
   const syntaxHighlightedCss = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(css)), [css])
+  const syntaxHighlightedScriipt = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(script)), [script])
 
   // set initial values taken from figma storage
   React.useEffect(() => {
@@ -60,6 +56,7 @@ const App: React.VFC = () => {
       setHtml(event.data.pluginMessage.generatedCodeStr)
       setCss(event.data.pluginMessage.cssString)
       setComponentName(event.data.pluginMessage.componentName)
+      setScript(event.data.pluginMessage.scriptString)
     }
   }, [])
 
@@ -67,6 +64,9 @@ const App: React.VFC = () => {
     <div>
       <div className={styles.code}>
         {/* <textarea className={styles.textareaForClipboard} ref={textRef} value={code} readOnly /> */}
+        {/* tsを表示 */}
+        <p>{componentName}.component.ts</p>
+        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedScriipt }} />
         {/* HTMLを表示 */}
         <p>{componentName}.component.html</p>
         <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedHtml }} />
