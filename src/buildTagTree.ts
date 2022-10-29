@@ -41,9 +41,11 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
       }
     })
   }
+  // variantの時は親コンポーネントの名前にする
+  const name = isImg ? 'img' : node.parent?.type === 'COMPONENT_SET' ? node.parent.name : node.name
 
   const tag: Tag = {
-    name: isImg ? 'img' : node.name,
+    name: name,
     isText: node.type === 'TEXT',
     textCharacters: node.type === 'TEXT' ? node.characters : null,
     isImg,

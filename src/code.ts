@@ -21,6 +21,7 @@ async function generate(node: SceneNode) {
   }
 
   // 独自のタグを登録してある場合はそれに変換できるように
+  // modify→変更
   const tag = await modifyTreeForComponent(originalTagTree, figma)
 
   const componentName = tag.name.replace(/\s/g, '').toLowerCase()

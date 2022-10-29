@@ -1,4 +1,6 @@
 export function kebabize(str: string): string {
+  // すでにケバブケースなら変換しない
+  if (str.indexOf('-')) return str
   return str
     .replace(/\s+/g, '')
     .split('')

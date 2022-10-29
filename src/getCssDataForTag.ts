@@ -193,6 +193,11 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
       className = 'text' + textCount.count
       textCount.increment()
     }
+    // variantの時は親コンポーネントの名前にする
+    if (node.parent?.type === 'COMPONENT_SET') {
+      className = node.parent.name
+    }
+
     return {
       // name Text node as "Text" since name of text node is often the content of the node and is not appropriate as a name
       className,
