@@ -12,7 +12,7 @@ type Property = {
 
 type Input = {
   name: string
-  defaultValue: string
+  defaultValue: string | boolean
   type: string
 }
 
@@ -106,6 +106,13 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
           if (p === '') return p + `"${c}"`
           return p + ' | ' + `"${c}"`
         }, '') as string
+        inputs.push(input)
+      }
+
+      if (value.type === 'BOOLEAN') {
+        input.name = lowerCamelCase(removeHash(key))
+        input.defaultValue = value.defaultValue
+        input.type = 'boolean'
         inputs.push(input)
       }
     }

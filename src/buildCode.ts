@@ -61,6 +61,9 @@ function buildChildTagsString(tag: Tag, level: number): string {
     return '\n' + tag.children.map((child) => buildHtmlString(child, level + 1)).join('\n')
   }
   if (tag.node.componentPropertyReferences) {
+    // TODO: booleanの時の挙動を調査
+    // ngIfを入れたい
+    if (!tag.node.componentPropertyReferences.characters) return ''
     return `{${lowerCamelCase(removeHash(tag.node.componentPropertyReferences.characters))}}`
   }
   if (tag.isText) {

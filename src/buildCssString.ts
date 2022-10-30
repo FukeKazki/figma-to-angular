@@ -3,9 +3,10 @@ import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
 
 function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
-  if (!tag.isComponent) {
-    arr.push(tag.css)
-  }
+  // TODO: icComponentの役割を調査
+  // if (!tag.isComponent) {
+  arr.push(tag.css)
+  // }
 
   tag.children.forEach((child) => {
     arr = buildArray(child, arr)
