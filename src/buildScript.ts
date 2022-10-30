@@ -3,9 +3,10 @@ import { kebabToUpperCamel } from './utils/stringUtils'
 
 export const buildScript = (tag: Tag, componentName: string): string => {
   let serializeInputs = ''
-  if (tag.isVariant) {
+  if (tag.isVariant || tag.isComponent) {
     serializeInputs = tag.inputs.map((input) => `@Input() private ${input.name}: ${input.type} = ${input.defaultValue}`).reduce((p, c) => p + '\n' + c, '')
   }
+
   // @Input
   // private text: string = "投稿"
   // @Input

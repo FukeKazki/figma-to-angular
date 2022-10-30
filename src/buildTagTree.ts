@@ -1,6 +1,8 @@
+import { useDebugValue } from 'react'
 import { UnitType } from './buildSizeStringByUnit'
 import { CSSData, getCssDataForTag, TextCount } from './getCssDataForTag'
 import { isImageNode } from './utils/isImageNode'
+import { lowerCamelCase, removeHash } from './utils/stringUtils'
 
 type Property = {
   name: string
@@ -24,7 +26,7 @@ export type Tag =
       css: CSSData
       children: Tag[]
       node: SceneNode
-      isComponent?: boolean
+      isComponent: false
       isVariant: false
     }
   | {
@@ -39,15 +41,20 @@ export type Tag =
       isComponent?: boolean
       isVariant: true
       inputs: Input[]
-  }
-
-type ComponentPropertyDefinitions = {
-  [key: string]: {
-    defaultValue: string
-    type: string
-    variantOptions?: string[]
-  }
-}
+    }
+  | {
+      name: string
+      isText: boolean
+      textCharacters: string | null
+      isImg: boolean
+      properties: Property[]
+      css: CSSData
+      children: Tag[]
+      node: SceneNode
+      isComponent: true
+      isVariant: boolean
+      inputs: Input[]
+    }
 
 export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount): Tag | null {
   if (!node.visible) {
@@ -77,9 +84,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   // variantの時はInputs型が生えるように
   const parent = node.parent
   if (parent?.type === 'COMPONENT_SET') {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const property = parent?.componentPropertyDefinitions as ComponentPropertyDefinitions
+    const property = parent?.componentPropertyDefinitions
     for (const [key, value] of Object.entries(property)) {
       const input: Input = {
         name: '',
@@ -104,6 +109,22 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
         inputs.push(input)
       }
     }
+  } else if (node.type === 'COMPONENT') {
+    const property = node.componentPropertyDefinitions
+    for (const [key, value] of Object.entries(property)) {
+      const input: Input = {
+        name: '',
+        defaultValue: '',
+        type: ''
+      }
+
+      if (value.type === 'TEXT') {
+        input.name = lowerCamelCase(removeHash(key))
+        input.defaultValue = `"${value.defaultValue}"`
+        input.type = 'string'
+        inputs.push(input)
+      }
+    }
   }
 
   const tag: Tag = {
@@ -116,7 +137,8 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
     children: childTags,
     node,
     isVariant: node.parent?.type === 'COMPONENT_SET',
-    inputs
+    inputs,
+    isComponent: node.type === 'COMPONENT'
   }
 
   return tag

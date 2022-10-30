@@ -1,6 +1,6 @@
 export function kebabize(str: string): string {
   // すでにケバブケースなら変換しない
-  if (str.indexOf('-')) return str
+  if (str.indexOf('-') === -1) return str
   return str
     .replace(/\s+/g, '')
     .split('')
@@ -16,4 +16,17 @@ export function capitalizeFirstLetter(str: string): string {
 
 export function kebabToUpperCamel(str: string): string {
   return capitalizeFirstLetter(str.split(/-|_/g).map(capitalizeFirstLetter).join(''))
+}
+
+export function removeHash(str: string): string {
+  const index = str.indexOf('#')
+  if (index !== -1) {
+    return str.substring(0, index)
+  }
+  return str
+}
+
+// TODO: 実装する
+export function lowerCamelCase(str: string): string {
+  return str.replace(/\s+/g, '')
 }

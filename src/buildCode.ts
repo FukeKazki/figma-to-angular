@@ -1,5 +1,6 @@
 import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
+import { lowerCamelCase, removeHash } from './utils/stringUtils'
 
 function buildSpaces(baseSpaces: number, level: number) {
   let spacesStr = ''
@@ -58,6 +59,9 @@ function buildPropertyString(prop: Tag['properties'][number]) {
 function buildChildTagsString(tag: Tag, level: number): string {
   if (tag.children.length > 0) {
     return '\n' + tag.children.map((child) => buildHtmlString(child, level + 1)).join('\n')
+  }
+  if (tag.node.componentPropertyReferences) {
+    return `{${lowerCamelCase(removeHash(tag.node.componentPropertyReferences.characters))}}`
   }
   if (tag.isText) {
     return `${tag.textCharacters}`
