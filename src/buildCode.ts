@@ -61,8 +61,6 @@ function buildChildTagsString(tag: Tag, level: number): string {
     return '\n' + tag.children.map((child) => buildHtmlString(child, level + 1)).join('\n')
   }
   if (tag.node.componentPropertyReferences) {
-    // TODO: booleanの時の挙動を調査
-    // ngIfを入れたい
     if (!tag.node.componentPropertyReferences.characters) return ''
     return `{${lowerCamelCase(removeHash(tag.node.componentPropertyReferences.characters))}}`
   }
@@ -76,6 +74,17 @@ export function buildHtml(tag: Tag): string {
   return `${buildHtmlString(tag, 0)}`
 }
 
+function buildDirective(tag: Tag) {
+  const property = tag.node.componentPropertyReferences
+  if (property) {
+    // *ngIfの対応
+    if (property.visible) {
+      return ` *ngIf="${lowerCamelCase(removeHash(property.visible))}"`
+    }
+  }
+  return ''
+}
+
 // htmlの生成
 function buildHtmlString(tag: Tag, level: number) {
   if (!tag) return ''
@@ -87,7 +96,9 @@ function buildHtmlString(tag: Tag, level: number) {
   const className = getClassName(tag)
   const properties = tag.properties.map(buildPropertyString).join('')
 
-  const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
+  const directive = buildDirective(tag)
+
+  const openingTag = `${spaceString}<${tagName}${className}${directive}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
   const childTags = buildChildTagsString(tag, level)
   const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
 
